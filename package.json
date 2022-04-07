@@ -2,12 +2,12 @@
     "name": "fpo-node-p2p",
     "version": "1.0.0",
     "description": "First Party Oracle Node Peer to Peer Communication",
-    "main": "index.js",
+    "main": "src/main.ts",
     "repository": "git@github.com:fluxprotocol/fpo-node-p2p.git",
     "license": "GPL-3.0-only",
     "private": false,
     "scripts": {
-        "start": "yarn build && node 'dist/src/main.js' start",
+        "start": "yarn build && node ./dist/src/main.js",
         "build": "tsc -p ."
     },
     "dependencies": {
