@@ -32,8 +32,9 @@ export default class Communicator {
 	_peers_file: string;
 	_retry: Set<string> = new Set();
 	_protocol: string;
+	_allowlist: Set<string> = new Set();
 
-	constructor(protocol: string, config?: Libp2pOptions & CreateOptions, peers?: string) {
+	constructor(protocol: string, config?: Libp2pOptions & CreateOptions, peers?: string, allowlist?: Set<string>) {
 		if (config === undefined) {
 			this._options = {
 				addresses: {
@@ -57,8 +58,19 @@ export default class Communicator {
 			this._peers = this.load_peers();
 		}
 
+		if (allowlist !== undefined) {
+			this._allowlist = allowlist;
+		}
+
 
 		this._protocol = protocol;
+	}
+
+	allowed(caller?: string): boolean {
+		if (caller === undefined) {
+			return false;
+		}
+		return this._allowlist.has(caller);
 	}
 
 	async init(): Promise<void> {
