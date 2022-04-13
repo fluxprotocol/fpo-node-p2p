@@ -5,17 +5,35 @@ import http from "http";
 import { fromString } from 'uint8arrays/from-string';
 import BufferList from "bl/BufferList";
 
+function median(values: number[]) {
+	values.sort((a, b) => {
+		return a - b;
+	});
+
+	let mid_point = Math.floor(values.length / 2);
+
+	if (mid_point % 2) {
+		return values[mid_point];
+	} else {
+		return (values[mid_point - 1 ] + values[mid_point - 2]) / 2.0;
+	}
+}
+
 async function main() {
 	logger.info(`🧙 Starting ${PROJECT_NAME} v${PROJECT_VERSION}`);
 	let body = '';
-	let json_body = {};
+	let json_body: { data: string } = { data: '' };
+	let received: number[] = [];
 	
 	const node = new Communicator('send');
 	await node.init();
 
 	node.handle_incoming(async (source: AsyncIterable<Uint8Array | BufferList>) => {
 		for await (const msg of source) {
-			console.log(msg.toString());
+			received.push(parseInt(msg.toString()));
+			if (received.length = node._peers.size) {
+				node.send([new Uint8Array(median(received))]);
+			}
 		}
 	});
 
@@ -36,7 +54,7 @@ async function main() {
 				logger.info(`body: ${body}`);
 				json_body = JSON.parse(body);
 
-				node.send([fromString(body)]);
+				node.send([fromString(json_body.data)]);
 
 				res.statusCode = 200;
 				res.end(JSON.stringify({
